@@ -30,5 +30,5 @@ long int Process::UpTime() { return upTime; }
 
 // Overload the "less than" comparison operator for Process objects
 bool Process::operator<(Process const& a) const { 
-    return this->cpu < a.cpu ? true : false; 
+    return this->cpu > a.cpu ? true : false; 
 }

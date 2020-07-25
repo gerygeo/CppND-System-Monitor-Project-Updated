@@ -36,13 +36,13 @@ string LinuxParser::OperatingSystem() {
 
 // DONE: An example of how to read data from the filesystem
 string LinuxParser::Kernel() {
-  string os, kernel;
+  string os, kernel, version;
   string line;
   std::ifstream stream(kProcDirectory + kVersionFilename);
   if (stream.is_open()) {
     std::getline(stream, line);
     std::istringstream linestream(line);
-    linestream >> os >> kernel;
+    linestream >> os >> version >> kernel;
   }
   return kernel;
 }
@@ -152,7 +152,7 @@ long LinuxParser::ActiveJiffies() {
   long system = jiffies[2];
   long irq = jiffies[5];
   long softirq = jiffies[6];
-  long steal = jiffies[7];
+  //long steal = jiffies[7];
   long guest = jiffies[8];
   long guest_nice = jiffies[9];
 
@@ -221,7 +221,11 @@ string LinuxParser::Command(int pid) {
 
 // Read and return the memory used by a process
 string LinuxParser::Ram(int pid) { 
-  long int ram = std::stol(checkFileForString(kProcDirectory + std::to_string(pid) + kStatusFilename, "VmSize"));
+  std::string result = checkFileForString(kProcDirectory + std::to_string(pid) + kStatusFilename, "VmSize");
+  if (result == ""){
+    result = "0";
+  }
+  long int ram = std::stol(result);
   
   return std::to_string(ram*0.001);  
 }

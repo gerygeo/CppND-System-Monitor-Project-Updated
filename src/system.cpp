@@ -22,9 +22,10 @@ Processor& System::Cpu() {
 
 // Return a container composed of the system's processes
 vector<Process>& System::Processes() { 
+    processes_.clear();
     vector<int> pids = LinuxParser::Pids();
     for (int pid : pids){
-        Process process {pid, LinuxParser::User(pid), LinuxParser::Command(pid), LinuxParser::Ram(pid), LinuxParser::UpTime(pid), (float)LinuxParser::ActiveJiffies(pid)/(float)LinuxParser::Jiffies()};
+        Process process {pid, LinuxParser::User(pid), LinuxParser::Command(pid), (float)LinuxParser::ActiveJiffies(pid)/(float)LinuxParser::Jiffies(), LinuxParser::Ram(pid), LinuxParser::UpTime(pid)};
         processes_.push_back(process);
     }
     std::sort(processes_.begin(), processes_.end());
