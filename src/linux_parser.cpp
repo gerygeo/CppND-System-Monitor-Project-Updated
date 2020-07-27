@@ -72,7 +72,7 @@ float LinuxParser::MemoryUtilization() {
   string line;
   string key;
   float total;
-  float free = 0;
+  float free {0.0};
   std::ifstream filestream(kProcDirectory.substr(0, kProcDirectory.length() - 1) + kMeminfoFilename);
   if (filestream.is_open()) {
     while (std::getline(filestream, line)) {
@@ -93,15 +93,15 @@ float LinuxParser::MemoryUtilization() {
 
 // Read and return the system uptime
 long LinuxParser::UpTime() { 
-  long upTime = 0.0;
+  long uptime {0};
   string line;
   std::ifstream filestream(kProcDirectory + kUptimeFilename);
   if (filestream.is_open()) {
       std::getline(filestream, line);
       std::istringstream linestream(line);
-      linestream >> upTime;
+      linestream >> uptime;
     }
-  return upTime;
+  return uptime;
 }
 
 vector<long> GetJiffies(){
@@ -129,7 +129,10 @@ long LinuxParser::Jiffies() { return ActiveJiffies() + IdleJiffies(); }
 
 // Read and return the number of active jiffies for a PID
 long LinuxParser::ActiveJiffies(int pid) { 
-  long utime, stime, cutime, cstime;
+  long utime;
+  long stime;
+  long cutime;
+  long cstime;
   string output;
   string line;
   std::ifstream filestream (kProcDirectory + std::to_string(pid) + kStatFilename);
@@ -227,7 +230,7 @@ string LinuxParser::Ram(int pid) {
   }
   long int ram = std::stol(result);
   
-  return std::to_string(ram*0.001);  
+  return std::to_string((long int)(ram*0.001));  
 }
 
 // Read and return the user ID associated with a process
@@ -265,5 +268,8 @@ long LinuxParser::UpTime(int pid) {
           linestream >> uptime;
     }
   } 
-  return std::stol(uptime)/sysconf(_SC_CLK_TCK); 
+
+  long uptimeprocess = LinuxParser::UpTime();
+  long uptimepid = std::stol(uptime)/sysconf(_SC_CLK_TCK);
+  return uptimeprocess - uptimepid; 
 }
